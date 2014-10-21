@@ -1,18 +1,22 @@
 using Base.Test
 
-global context_counter = [0]
+type Index
+    index
+end
+
+global index = Index(1)
+
 befores = Dict();
 
 function context(f::Function, description)
-    push!(context_counter, context_counter[end] + 1)
+    index.index = index.index + 1
 
     println(description)
     f()
 end
 
 macro before(exp::Expr)
-    esc(merge!(befores, {context_counter[end] => exp}))
+    befores[index.index] = exp
 
-    println(befores)
     esc(exp)
 end
