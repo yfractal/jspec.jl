@@ -18,8 +18,6 @@ end
 
 macro before(exp::Expr)
     befores[index.index] = exp
-
-    esc(exp)
 end
 
 # works like test
@@ -28,6 +26,7 @@ macro it(ex)
   if typeof(ex) == Expr && ex.head == :comparison
       func_block = Expr(:block)
       # finish the block with a return
+      push!(func_block.args , befores[index.index]) # let eh func_block execuate the before's assasiment first
       push!(func_block.args, Expr(:return, :(Expr(:comparison, $(ex.args...)), $(Expr(:comparison, ex.args...)))))
       :(do_test(()->($func_block), $(Expr(:quote,ex))))
   else

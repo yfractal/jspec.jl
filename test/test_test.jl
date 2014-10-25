@@ -12,7 +12,7 @@ context("before macro") do
         x = 1
     end
 
-    @test x == 1
+    @it x == 1
 end
 
 # outer of the context, x should not be defined
@@ -20,4 +20,24 @@ try
     x
 catch error
     @test typeof(error) == UndefVarError
+end
+
+type Foo
+    f
+end
+
+function change_foo!(foo)
+    foo.f = "changed"
+    foo
+end
+
+
+context("before") do
+    @before begin
+        foo = Foo(1)
+    end
+
+    @it foo.f == 1
+    @it change_foo!(foo).f == "changed"
+    @it foo.f == 1
 end
