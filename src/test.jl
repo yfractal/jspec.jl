@@ -1,4 +1,5 @@
 using Base.Test
+import Base.Test.do_test
 
 type Index
     index
@@ -19,4 +20,18 @@ macro before(exp::Expr)
     befores[index.index] = exp
 
     esc(exp)
+end
+
+# works like test
+# use origin variable do compare
+macro it(ex)
+  if typeof(ex) == Expr && ex.head == :comparison
+      func_block = Expr(:block)
+      # finish the block with a return
+      push!(func_block.args, Expr(:return, :(Expr(:comparison, $(ex.args...)), $(Expr(:comparison, ex.args...)))))
+      :(do_test(()->($func_block), $(Expr(:quote,ex))))
+  else
+      :(do_test(()->($(Expr(:quote,ex)), $(esc(ex))), $(Expr(:quote,ex))))
+  end
+
 end
