@@ -5,7 +5,6 @@ context("do some test") do
     @test 1 == 1
 end
 
-
 context("before macro") do
     # it take a block
     @before begin
