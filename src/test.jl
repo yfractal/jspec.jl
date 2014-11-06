@@ -14,7 +14,6 @@ befores = Dict();
 # in the context's before, there is some precondition or setup things
 # and the context's before will be execuate before each @it(test).
 # so it the precondition is setted up
-
 function context(f::Function, description)
     index.index = index.index + 1 # use the index to identify the current context's before
 
@@ -41,3 +40,18 @@ macro it(ex)
   end
 
 end
+
+# origin test code from julia
+# macro test(ex)
+#     if typeof(ex) == Expr && ex.head == :comparison
+#         syms = [gensym() for i = 1:length(ex.args)]
+#         func_block = Expr(:block)
+#         # insert assignment into a block
+#         func_block.args = [:($(syms[i]) = $(esc(ex.args[i]))) for i = 1:length(ex.args)]
+#         # finish the block with a return
+#         push!(func_block.args, Expr(:return, :(Expr(:comparison, $(syms...)), $(Expr(:comparison, syms...)))))
+#         :(do_test(()->($func_block), $(Expr(:quote,ex))))
+#     else
+#         :(do_test(()->($(Expr(:quote,ex)), $(esc(ex))), $(Expr(:quote,ex))))
+#     end
+# end
