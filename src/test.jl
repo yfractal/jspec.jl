@@ -9,19 +9,26 @@ global index = Index(1)
 
 befores = Dict();
 
+# another name of context
+# each context has one before
+# in the context's before, there is some precondition or setup things
+# and the context's before will be execuate before each @it(test).
+# so it the precondition is setted up
+
 function context(f::Function, description)
-    index.index = index.index + 1
+    index.index = index.index + 1 # use the index to identify the current context's before
 
     println(description)
     f()
 end
 
+# another name of setup
 macro before(exp::Expr)
     befores[index.index] = exp
 end
 
 # works like test
-# use origin variable do compare
+# use origin variable do compare because, setup need "polute" the variable
 macro it(ex)
   if typeof(ex) == Expr && ex.head == :comparison
       func_block = Expr(:block)
